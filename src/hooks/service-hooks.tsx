@@ -15,5 +15,6 @@ export type PunishmentHookProps = {
 };
 
 export const getPunishments = (props: PunishmentHookProps): Punishment[] => {
+    console.log(props);
     return MockResponse;
 };

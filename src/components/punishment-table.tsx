@@ -62,7 +62,6 @@ export const PunishmentTable = (props: PunishmentTableProps) => {
         getTableProps,
         getTableBodyProps,
         headerGroups,
-        rows,
         page,
         prepareRow,
         canPreviousPage,
@@ -214,15 +213,12 @@ export const PunishmentTable = (props: PunishmentTableProps) => {
                 </thead>
                 <tbody {...getTableBodyProps()}>
                     {page.map(
-                        (
-                            row: {
-                                getRowProps: () => JSX.IntrinsicAttributes &
-                                    React.ClassAttributes<HTMLTableRowElement> &
-                                    React.HTMLAttributes<HTMLTableRowElement>;
-                                cells: any[];
-                            },
-                            i: any,
-                        ) => {
+                        (row: {
+                            getRowProps: () => JSX.IntrinsicAttributes &
+                                React.ClassAttributes<HTMLTableRowElement> &
+                                React.HTMLAttributes<HTMLTableRowElement>;
+                            cells: any[];
+                        }) => {
                             prepareRow(row);
                             return (
                                 <tr key={1} {...row.getRowProps()}>

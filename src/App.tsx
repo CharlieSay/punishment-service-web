@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { getPunishments, Punishment } from './hooks/service-hooks';
 import { PunishmentTable } from './components/punishment-table';
 import styled from 'styled-components';
@@ -10,13 +10,13 @@ const Spacer = styled.div`
 
 const App = () => {
     const [data, setData] = useState<Punishment[]>([]);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [pageCount, setPageCount] = useState(0);
     const fetchIdRef = React.useRef(0);
 
     const fetchData = React.useCallback(({ pageSize, pageIndex }) => {
         const fetchId = ++fetchIdRef.current;
-        setLoading(true);
+        // setLoading(true);
 
         setTimeout(() => {
             if (fetchId === fetchIdRef.current) {
@@ -27,7 +27,7 @@ const App = () => {
 
                 setPageCount(Math.ceil(punishmentData.length / pageSize));
 
-                setLoading(false);
+                // setLoading(false);
             }
         }, 100);
     }, []);
