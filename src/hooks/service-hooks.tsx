@@ -9,6 +9,11 @@ export interface Punishment {
     type: string;
 }
 
-export const getPunishments = (): Punishment[] => {
+export type PunishmentHookProps = {
+    pageSize: number;
+    pageIndexRequest: number;
+};
+
+export const getPunishments = (props: PunishmentHookProps): Punishment[] => {
     return MockResponse;
 };
