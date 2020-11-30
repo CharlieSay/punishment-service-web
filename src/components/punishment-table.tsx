@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useMemo } from 'react';
 import { Table } from 'react-bootstrap';
 import { useTable, usePagination } from 'react-table';
 import { Punishment } from '../hooks/service-hooks';
-
 interface PunishmentTableProps {
     punishmentData: Punishment[];
+    fetchData: ({ pageSize, pageIndex }: any) => void;
+    controlledPageCount: number;
 }
 
 export const PunishmentTable = (props: PunishmentTableProps) => {
@@ -38,15 +40,30 @@ export const PunishmentTable = (props: PunishmentTableProps) => {
         [],
     );
 
-    const tableData = props.punishmentData;
+    const { fetchData, controlledPageCount } = props;
 
-    const tableInstance = useTable({ columns, tableData }, usePagination);
+    const data = props.punishmentData;
+
+    const tableInstance = useTable(
+        {
+            columns,
+            data,
+            initialState: { pageIndex: 0 }, // Pass our hoisted table state
+            manualPagination: true, // Tell the usePagination
+            // hook that we'll handle our own data fetching
+            // This means we'll also have to provide our own
+            // pageCount.
+            pageCount: controlledPageCount,
+        },
+        usePagination,
+    );
 
     const {
         getTableProps,
         getTableBodyProps,
         headerGroups,
         rows,
+        page,
         prepareRow,
         canPreviousPage,
         canNextPage,
@@ -59,10 +76,29 @@ export const PunishmentTable = (props: PunishmentTableProps) => {
         state: { pageIndex, pageSize },
     } = tableInstance;
 
+    useEffect(() => {
+        fetchData({ pageIndex, pageSize });
+    }, [fetchData, pageIndex, pageSize]);
+
     return (
         <>
+            <pre>
+                <code>
+                    {JSON.stringify(
+                        {
+                            pageIndex,
+                            pageSize,
+                            pageCount,
+                            canNextPage,
+                            canPreviousPage,
+                        },
+                        null,
+                        2,
+                    )}
+                </code>
+            </pre>
             <Table striped bordered hover {...getTableProps()}>
-                <thead>
+                {/* <thead>
                     {headerGroups.map(
                         (
                             headerGroup: {
@@ -147,6 +183,72 @@ export const PunishmentTable = (props: PunishmentTableProps) => {
                             },
                         )
                     }
+                </tbody> */}
+                <thead>
+                    {headerGroups.map(
+                        (headerGroup: {
+                            getHeaderGroupProps: () => JSX.IntrinsicAttributes &
+                                React.ClassAttributes<HTMLTableRowElement> &
+                                React.HTMLAttributes<HTMLTableRowElement>;
+                            headers: any[];
+                        }) => (
+                            <tr key={'1'} {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map(
+                                    (column: {
+                                        getHeaderProps: () => JSX.IntrinsicAttributes &
+                                            React.ClassAttributes<HTMLTableHeaderCellElement> &
+                                            React.ThHTMLAttributes<HTMLTableHeaderCellElement>;
+                                        render: (arg0: string) => React.ReactNode;
+                                        isSorted: any;
+                                        isSortedDesc: any;
+                                    }) => (
+                                        <th key={'1'} {...column.getHeaderProps()}>
+                                            {column.render('Header')}
+                                            <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                                        </th>
+                                    ),
+                                )}
+                            </tr>
+                        ),
+                    )}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {page.map(
+                        (
+                            row: {
+                                getRowProps: () => JSX.IntrinsicAttributes &
+                                    React.ClassAttributes<HTMLTableRowElement> &
+                                    React.HTMLAttributes<HTMLTableRowElement>;
+                                cells: any[];
+                            },
+                            i: any,
+                        ) => {
+                            prepareRow(row);
+                            return (
+                                <tr key={1} {...row.getRowProps()}>
+                                    {row.cells.map(
+                                        (cell: {
+                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                            render: (arg0: string) => React.ReactNode;
+                                        }) => {
+                                            return (
+                                                <td key={1} {...cell.getCellProps()}>
+                                                    {cell.render('Cell')}
+                                                </td>
+                                            );
+                                        },
+                                    )}
+                                </tr>
+                            );
+                        },
+                    )}
+                    <tr>
+                        <td colSpan={10000}>
+                            Showing {page.length} of ~{pageCount * pageSize} results
+                        </td>
+                    </tr>
                 </tbody>
             </Table>
             <div className="pagination">
