@@ -1,5 +1,6 @@
 import MockResponse from '../data/mock-response.json';
 
+const REST_ENDPOINT = process.env.PUNISHMENT_SERVICE_API || 'localhost:10000';
 export interface Punishment {
     uuid: string;
     username: string;
@@ -14,7 +15,13 @@ export type PunishmentHookProps = {
     pageIndexRequest: number;
 };
 
-export const getPunishments = (props: PunishmentHookProps): Punishment[] => {
-    console.log(props);
-    return MockResponse;
+export type PunishmentRestServiceRest = {
+    totalResults: number;
+    results: Punishment[];
+};
+
+export const getPunishments = (props: PunishmentHookProps): PunishmentRestServiceRest => {
+    const requestUrl = `${REST_ENDPOINT}/allPunishements?pageSize=${props.pageSize}&page=${props.pageIndexRequest}`;
+    console.log(requestUrl);
+    return { results: MockResponse, totalResults: MockResponse.length };
 };
